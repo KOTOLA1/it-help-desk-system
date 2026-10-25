@@ -1,0 +1,4934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>IT Help Desk System</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#2563eb",
+                        secondary: "#0f172a"
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+
+<body class="bg-slate-100 text-slate-800">
+
+<div class="flex min-h-screen">
+
+    <!-- ========================================================= -->
+    <!-- SIDEBAR -->
+    <!-- ========================================================= -->
+
+    <aside
+        id="sidebar"
+        class="fixed md:static inset-y-0 left-0 z-40 w-64 bg-slate-900 text-white transform -translate-x-full md:translate-x-0 transition-transform duration-300"
+    >
+
+        <div class="flex items-center justify-between px-6 py-5 border-b border-slate-700">
+
+            <div>
+                <h1 class="text-xl font-bold">
+                    IT Help Desk
+                </h1>
+
+                <p class="text-xs text-slate-400 mt-1">
+                    Support Management System
+                </p>
+            </div>
+
+            <button
+                onclick="toggleSidebar()"
+                class="md:hidden text-slate-300"
+            >
+                ✕
+            </button>
+
+        </div>
+
+
+        <!-- USER INFO -->
+
+        <div class="px-5 py-5 border-b border-slate-700">
+
+            <div class="flex items-center gap-3">
+
+                <div
+                    class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-bold"
+                    id="sidebarAvatar"
+                >
+                    U
+                </div>
+
+                <div class="min-w-0">
+
+                    <p
+                        id="sidebarUserName"
+                        class="font-semibold truncate"
+                    >
+                        User
+                    </p>
+
+                    <p
+                        id="sidebarUserRole"
+                        class="text-xs text-slate-400 capitalize"
+                    >
+                        employee
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- NAVIGATION -->
+
+        <nav class="p-4 space-y-1">
+
+            <button
+                onclick="showSection('dashboard')"
+                class="nav-btn w-full text-left px-4 py-3 rounded-lg bg-blue-600"
+                data-section="dashboard"
+            >
+                📊 Dashboard
+            </button>
+
+            <button
+                onclick="showSection('tickets')"
+                class="nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800"
+                data-section="tickets"
+            >
+                🎫 Tickets
+            </button>
+
+            <button
+                onclick="showSection('createTicket')"
+                class="nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800"
+                data-section="createTicket"
+            >
+                ➕ Create Ticket
+            </button>
+
+            <button
+                onclick="showSection('knowledgeBase')"
+                class="nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800"
+                data-section="knowledgeBase"
+            >
+                📚 Knowledge Base
+            </button>
+
+            <button
+                id="assetsNav"
+                onclick="showSection('assets')"
+                class="nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 hidden"
+                data-section="assets"
+            >
+                💻 Assets
+            </button>
+
+            <button
+                onclick="showSection('reports')"
+                class="nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800"
+                data-section="reports"
+            >
+                📈 Reports
+            </button>
+
+            <button
+                id="userManagementNav"
+                onclick="showSection('users')"
+                class="nav-btn w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 hidden"
+                data-section="users"
+            >
+                👥 User Management
+            </button>
+
+        </nav>
+
+
+        <!-- LOGOUT -->
+
+        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-700">
+
+            <button
+                onclick="logout()"
+                class="w-full px-4 py-3 rounded-lg bg-red-600 hover:bg-red-700 transition"
+            >
+                🚪 Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MOBILE OVERLAY -->
+
+    <div
+        id="sidebarOverlay"
+        onclick="toggleSidebar()"
+        class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"
+    ></div>
+
+
+    <!-- ========================================================= -->
+    <!-- MAIN CONTENT -->
+    <!-- ========================================================= -->
+
+    <main class="flex-1 min-w-0">
+
+        <!-- HEADER -->
+
+        <header class="bg-white shadow-sm sticky top-0 z-20">
+
+            <div class="px-4 md:px-8 py-4 flex items-center justify-between">
+
+                <div class="flex items-center gap-3">
+
+                    <button
+                        onclick="toggleSidebar()"
+                        class="md:hidden text-slate-600 text-xl"
+                    >
+                        ☰
+                    </button>
+
+                    <div>
+
+                        <h2
+                            id="pageTitle"
+                            class="text-xl md:text-2xl font-bold"
+                        >
+                            Dashboard
+                        </h2>
+
+                        <p
+                            id="pageSubtitle"
+                            class="text-sm text-slate-500 hidden sm:block"
+                        >
+                            IT support overview
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="flex items-center gap-3">
+
+                    <span
+                        id="headerUserRole"
+                        class="hidden sm:block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm capitalize"
+                    >
+                        employee
+                    </span>
+
+                    <button
+                        onclick="loadCurrentSection()"
+                        class="p-2 rounded-lg hover:bg-slate-100"
+                        title="Refresh"
+                    >
+                        🔄
+                    </button>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- PAGE CONTAINER -->
+
+        <div class="p-4 md:p-8">
+
+
+            <!-- ================================================= -->
+            <!-- DASHBOARD -->
+            <!-- ================================================= -->
+
+            <section id="section-dashboard" class="page-section">
+
+                <div class="mb-6">
+
+                    <h3 class="text-2xl font-bold">
+                        Welcome back, <span id="welcomeName">User</span> 👋
+                    </h3>
+
+                    <p class="text-slate-500 mt-1">
+                        Here's what's happening with your IT support system.
+                    </p>
+
+                </div>
+
+
+                <!-- STAT CARDS -->
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+
+                    <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200">
+
+                        <div class="flex justify-between">
+
+                            <div>
+                                <p class="text-sm text-slate-500">
+                                    Total Tickets
+                                </p>
+
+                                <p
+                                    id="statTotal"
+                                    class="text-3xl font-bold mt-2"
+                                >
+                                    0
+                                </p>
+                            </div>
+
+                            <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-2xl">
+                                🎫
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200">
+
+                        <div class="flex justify-between">
+
+                            <div>
+                                <p class="text-sm text-slate-500">
+                                    Open
+                                </p>
+
+                                <p
+                                    id="statOpen"
+                                    class="text-3xl font-bold mt-2"
+                                >
+                                    0
+                                </p>
+                            </div>
+
+                            <div class="w-12 h-12 rounded-xl bg-yellow-100 flex items-center justify-center text-2xl">
+                                🟡
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200">
+
+                        <div class="flex justify-between">
+
+                            <div>
+                                <p class="text-sm text-slate-500">
+                                    In Progress
+                                </p>
+
+                                <p
+                                    id="statProgress"
+                                    class="text-3xl font-bold mt-2"
+                                >
+                                    0
+                                </p>
+                            </div>
+
+                            <div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-2xl">
+                                🔵
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="bg-white rounded-xl shadow-sm p-5 border border-slate-200">
+
+                        <div class="flex justify-between">
+
+                            <div>
+                                <p class="text-sm text-slate-500">
+                                    Resolved
+                                </p>
+
+                                <p
+                                    id="statResolved"
+                                    class="text-3xl font-bold mt-2"
+                                >
+                                    0
+                                </p>
+                            </div>
+
+                            <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center text-2xl">
+                                ✅
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- QUICK ACTIONS -->
+
+                <div class="grid md:grid-cols-3 gap-5 mb-8">
+
+                    <button
+                        onclick="showSection('createTicket')"
+                        class="bg-blue-600 hover:bg-blue-700 text-white rounded-xl p-6 text-left transition"
+                    >
+
+                        <div class="text-3xl mb-3">
+                            ➕
+                        </div>
+
+                        <h3 class="font-bold text-lg">
+                            Create Ticket
+                        </h3>
+
+                        <p class="text-blue-100 text-sm mt-1">
+                            Report a new IT problem.
+                        </p>
+
+                    </button>
+
+
+                    <button
+                        onclick="showSection('tickets')"
+                        class="bg-white hover:bg-slate-50 border border-slate-200 rounded-xl p-6 text-left transition"
+                    >
+
+                        <div class="text-3xl mb-3">
+                            🎫
+                        </div>
+
+                        <h3 class="font-bold text-lg">
+                            View Tickets
+                        </h3>
+
+                        <p class="text-slate-500 text-sm mt-1">
+                            Track your support requests.
+                        </p>
+
+                    </button>
+
+
+                    <button
+                        onclick="showSection('knowledgeBase')"
+                        class="bg-white hover:bg-slate-50 border border-slate-200 rounded-xl p-6 text-left transition"
+                    >
+
+                        <div class="text-3xl mb-3">
+                            📚
+                        </div>
+
+                        <h3 class="font-bold text-lg">
+                            Knowledge Base
+                        </h3>
+
+                        <p class="text-slate-500 text-sm mt-1">
+                            Find solutions to common problems.
+                        </p>
+
+                    </button>
+
+                </div>
+
+
+                <!-- RECENT TICKETS -->
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200">
+
+                    <div class="p-5 border-b flex justify-between items-center">
+
+                        <div>
+                            <h3 class="font-bold text-lg">
+                                Recent Tickets
+                            </h3>
+
+                            <p class="text-sm text-slate-500">
+                                Latest support requests
+                            </p>
+                        </div>
+
+                        <button
+                            onclick="showSection('tickets')"
+                            class="text-blue-600 text-sm font-semibold"
+                        >
+                            View All
+                        </button>
+
+                    </div>
+
+                    <div
+                        id="recentTickets"
+                        class="p-5"
+                    >
+                        <div class="text-center py-8 text-slate-500">
+                            Loading...
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- TICKETS -->
+            <!-- ================================================= -->
+
+            <section
+                id="section-tickets"
+                class="page-section hidden"
+            >
+
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+
+                    <div>
+
+                        <h3 class="text-2xl font-bold">
+                            Tickets
+                        </h3>
+
+                        <p class="text-slate-500">
+                            Manage and track support tickets.
+                        </p>
+
+                    </div>
+
+                    <button
+                        onclick="showSection('createTicket')"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg"
+                    >
+                        + Create Ticket
+                    </button>
+
+                </div>
+
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200">
+
+                    <div class="p-5 border-b">
+
+                        <input
+                            id="ticketSearch"
+                            oninput="filterTickets()"
+                            type="text"
+                            placeholder="Search tickets..."
+                            class="w-full md:w-96 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                        >
+
+                    </div>
+
+                    <div class="overflow-x-auto">
+
+                        <table class="w-full">
+
+                            <thead class="bg-slate-50">
+
+                                <tr class="text-left text-sm text-slate-500">
+
+                                    <th class="px-5 py-4">
+                                        Ticket
+                                    </th>
+
+                                    <th class="px-5 py-4">
+                                        Subject
+                                    </th>
+
+                                    <th class="px-5 py-4">
+                                        Category
+                                    </th>
+
+                                    <th class="px-5 py-4">
+                                        Priority
+                                    </th>
+
+                                    <th class="px-5 py-4">
+                                        Status
+                                    </th>
+
+                                    <th class="px-5 py-4">
+                                        Date
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody id="ticketsTable">
+
+                                <tr>
+                                    <td
+                                        colspan="6"
+                                        class="text-center py-10 text-slate-500"
+                                    >
+                                        Loading...
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- CREATE TICKET -->
+            <!-- ================================================= -->
+
+            <section
+                id="section-createTicket"
+                class="page-section hidden"
+            >
+
+                <div class="max-w-3xl">
+
+                    <div class="mb-6">
+
+                        <h3 class="text-2xl font-bold">
+                            Create Support Ticket
+                        </h3>
+
+                        <p class="text-slate-500">
+                            Describe your IT problem and submit a support request.
+                        </p>
+
+                    </div>
+
+
+                    <form
+                        id="ticketForm"
+                        class="bg-white rounded-xl shadow-sm border p-6 space-y-5"
+                    >
+
+                        <div>
+
+                            <label class="block text-sm font-semibold mb-2">
+                                Subject
+                            </label>
+
+                            <input
+                                id="ticketSubject"
+                                type="text"
+                                required
+                                placeholder="Example: Computer cannot connect to network"
+                                class="w-full px-4 py-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+
+                        </div>
+
+
+                        <div class="grid md:grid-cols-2 gap-5">
+
+                            <div>
+
+                                <label class="block text-sm font-semibold mb-2">
+                                    Category
+                                </label>
+
+                                <select
+                                    id="ticketCategory"
+                                    required
+                                    class="w-full px-4 py-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+
+                                    <option value="">
+                                        Select category
+                                    </option>
+
+                                    <option value="1">Hardware</option>
+                                    <option value="2">Software</option>
+                                    <option value="3">Network</option>
+                                    <option value="4">Printer</option>
+                                    <option value="5">Email</option>
+                                    <option value="6">User Account</option>
+                                    <option value="7">Internet</option>
+                                    <option value="8">Security</option>
+                                    <option value="9">System Access</option>
+                                    <option value="10">Other</option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div>
+
+                                <label class="block text-sm font-semibold mb-2">
+                                    Priority
+                                </label>
+
+                                <select
+                                    id="ticketPriority"
+                                    required
+                                    class="w-full px-4 py-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+
+                                    <option value="1">
+                                        Low
+                                    </option>
+
+                                    <option value="2" selected>
+                                        Medium
+                                    </option>
+
+                                    <option value="3">
+                                        High
+                                    </option>
+
+                                    <option value="4">
+                                        Critical
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+
+                        <div>
+
+                            <label class="block text-sm font-semibold mb-2">
+                                Description
+                            </label>
+
+                            <textarea
+                                id="ticketDescription"
+                                required
+                                rows="6"
+                                placeholder="Explain the problem in detail..."
+                                class="w-full px-4 py-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                            ></textarea>
+
+                        </div>
+
+
+                        <div class="flex gap-3">
+
+                            <button
+                                type="submit"
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold"
+                            >
+                                Submit Ticket
+                            </button>
+
+                            <button
+                                type="button"
+                                onclick="showSection('tickets')"
+                                class="px-6 py-3 border rounded-lg hover:bg-slate-50"
+                            >
+                                Cancel
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- KNOWLEDGE BASE -->
+            <!-- ================================================= -->
+
+            <section
+                id="section-knowledgeBase"
+                class="page-section hidden"
+            >
+
+                <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+
+                    <div>
+
+                        <h3 class="text-2xl font-bold">
+                            Knowledge Base
+                        </h3>
+
+                        <p class="text-slate-500">
+                            Find solutions and troubleshooting guides.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        id="createArticleBtn"
+                        onclick="openArticleModal()"
+                        class="hidden bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg"
+                    >
+                        + New Article
+                    </button>
+
+                </div>
+
+
+                <div class="mb-5">
+
+                    <input
+                        id="knowledgeSearch"
+                        oninput="filterKnowledge()"
+                        type="text"
+                        placeholder="Search knowledge base..."
+                        class="w-full md:w-96 px-4 py-3 border rounded-lg bg-white outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+
+                </div>
+
+
+                <div
+                    id="knowledgeGrid"
+                    class="grid md:grid-cols-2 xl:grid-cols-3 gap-5"
+                >
+
+                    <div class="col-span-full text-center py-12 text-slate-500">
+                        Loading knowledge base...
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- ASSETS -->
+            <!-- ================================================= -->
+
+            <section
+                id="section-assets"
+                class="page-section hidden"
+            >
+
+                <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+
+                    <div>
+
+                        <h3 class="text-2xl font-bold">
+                            Asset Management
+                        </h3>
+
+                        <p class="text-slate-500">
+                            Manage organizational IT equipment.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        id="createAssetBtn"
+                        onclick="openAssetModal()"
+                        class="hidden bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg"
+                    >
+                        + Add Asset
+                    </button>
+
+                </div>
+
+
+                <!-- ASSET STATS -->
+
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+
+                    <div class="bg-white rounded-xl border p-5">
+
+                        <p class="text-sm text-slate-500">
+                            Total Assets
+                        </p>
+
+                        <p
+                            id="assetTotal"
+                            class="text-2xl font-bold mt-2"
+                        >
+                            0
+                        </p>
+
+                    </div>
+
+
+                    <div class="bg-white rounded-xl border p-5">
+
+                        <p class="text-sm text-slate-500">
+                            Available
+                        </p>
+
+                        <p
+                            id="assetAvailable"
+                            class="text-2xl font-bold mt-2"
+                        >
+                            0
+                        </p>
+
+                    </div>
+
+
+                    <div class="bg-white rounded-xl border p-5">
+
+                        <p class="text-sm text-slate-500">
+                            Assigned
+                        </p>
+
+                        <p
+                            id="assetAssigned"
+                            class="text-2xl font-bold mt-2"
+                        >
+                            0
+                        </p>
+
+                    </div>
+
+
+                    <div class="bg-white rounded-xl border p-5">
+
+                        <p class="text-sm text-slate-500">
+                            Maintenance
+                        </p>
+
+                        <p
+                            id="assetMaintenance"
+                            class="text-2xl font-bold mt-2"
+                        >
+                            0
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ASSET TABLE -->
+
+                <div class="bg-white rounded-xl shadow-sm border">
+
+                    <div class="p-5 border-b">
+
+                        <input
+                            id="assetSearch"
+                            oninput="filterAssets()"
+                            type="text"
+                            placeholder="Search assets..."
+                            class="w-full md:w-96 px-4 py-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+
+                    </div>
+
+
+                    <div class="overflow-x-auto">
+
+                        <table class="w-full">
+
+                            <thead class="bg-slate-50">
+
+                                <tr class="text-left text-sm text-slate-500">
+
+                                    <th class="px-5 py-4">
+                                        Asset Tag
+                                    </th>
+
+                                    <th class="px-5 py-4">
+                                        Type
+                                    </th>
+
+                                    <th class="px-5 py-4">
+                                        Brand / Model
+                                    </th>
+
+                                    <th class="px-5 py-4">
+                                        Serial Number
+                                    </th>
+
+                                    <th class="px-5 py-4">
+                                        Assigned To
+                                    </th>
+
+                                    <th class="px-5 py-4">
+                                        Status
+                                    </th>
+
+                                    <th class="px-5 py-4">
+                                        Actions
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody id="assetsTable">
+
+                                <tr>
+
+                                    <td
+                                        colspan="7"
+                                        class="text-center py-10 text-slate-500"
+                                    >
+                                        Loading assets...
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- REPORTS -->
+            <!-- ================================================= -->
+
+            <section
+                id="section-reports"
+                class="page-section hidden"
+            >
+
+                <div class="mb-6">
+
+                    <h3 class="text-2xl font-bold">
+                        Reports
+                    </h3>
+
+                    <p class="text-slate-500">
+                        Overview of help desk performance.
+                    </p>
+
+                </div>
+
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+
+                    <div class="bg-white border rounded-xl p-6">
+
+                        <p class="text-slate-500 text-sm">
+                            Total Tickets
+                        </p>
+
+                        <p
+                            id="reportTotal"
+                            class="text-3xl font-bold mt-2"
+                        >
+                            0
+                        </p>
+
+                    </div>
+
+
+                    <div class="bg-white border rounded-xl p-6">
+
+                        <p class="text-slate-500 text-sm">
+                            Open Tickets
+                        </p>
+
+                        <p
+                            id="reportOpen"
+                            class="text-3xl font-bold mt-2"
+                        >
+                            0
+                        </p>
+
+                    </div>
+
+
+                    <div class="bg-white border rounded-xl p-6">
+
+                        <p class="text-slate-500 text-sm">
+                            Resolved
+                        </p>
+
+                        <p
+                            id="reportResolved"
+                            class="text-3xl font-bold mt-2"
+                        >
+                            0
+                        </p>
+
+                    </div>
+
+
+                    <div class="bg-white border rounded-xl p-6">
+
+                        <p class="text-slate-500 text-sm">
+                            Critical
+                        </p>
+
+                        <p
+                            id="reportCritical"
+                            class="text-3xl font-bold mt-2"
+                        >
+                            0
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- USER MANAGEMENT -->
+            <!-- ================================================= -->
+
+            <section
+                id="section-users"
+                class="page-section hidden"
+            >
+
+                <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+
+                    <div>
+
+                        <h3 class="text-2xl font-bold">
+                            User Management
+                        </h3>
+
+                        <p class="text-slate-500">
+                            Manage system users and access.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        onclick="openUserModal()"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg"
+                    >
+                        + Create User
+                    </button>
+
+                </div>
+
+
+                <!-- USER STATS -->
+
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+
+                    <div class="bg-white border rounded-xl p-5">
+
+                        <p class="text-sm text-slate-500">
+                            Total Users
+                        </p>
+
+                        <p
+                            id="userTotal"
+                            class="text-2xl font-bold mt-2"
+                        >
+                            0
+                        </p>
+
+                    </div>
+
+
+                    <div class="bg-white border rounded-xl p-5">
+
+                        <p class="text-sm text-slate-500">
+                            Active
+                        </p>
+
+                        <p
+                            id="userActive"
+                            class="text-2xl font-bold mt-2"
+                        >
+                            0
+                        </p>
+
+                    </div>
+
+
+                    <div class="bg-white border rounded-xl p-5">
+
+                        <p class="text-sm text-slate-500">
+                            Help Desk
+                        </p>
+
+                        <p
+                            id="userHelpdesk"
+                            class="text-2xl font-bold mt-2"
+                        >
+                            0
+                        </p>
+
+                    </div>
+
+
+                    <div class="bg-white border rounded-xl p-5">
+
+                        <p class="text-sm text-slate-500">
+                            Employees
+                        </p>
+
+                        <p
+                            id="userEmployees"
+                            class="text-2xl font-bold mt-2"
+                        >
+                            0
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="bg-white rounded-xl border">
+
+                    <div class="p-5 border-b">
+
+                        <input
+                            id="userSearch"
+                            oninput="filterUsers()"
+                            type="text"
+                            placeholder="Search users..."
+                            class="w-full md:w-96 px-4 py-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+
+                    </div>
+
+
+                    <div class="overflow-x-auto">
+
+                        <table class="w-full">
+
+                            <thead class="bg-slate-50">
+
+                                <tr class="text-left text-sm text-slate-500">
+
+                                    <th class="px-5 py-4">
+                                        Name
+                                    </th>
+
+                                    <th class="px-5 py-4">
+                                        Username
+                                    </th>
+
+                                    <th class="px-5 py-4">
+                                        Email
+                                    </th>
+
+                                    <th class="px-5 py-4">
+                                        Role
+                                    </th>
+
+                                    <th class="px-5 py-4">
+                                        Department
+                                    </th>
+
+                                    <th class="px-5 py-4">
+                                        Status
+                                    </th>
+
+                                    <th class="px-5 py-4">
+                                        Action
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody id="usersTable">
+
+                                <tr>
+
+                                    <td
+                                        colspan="7"
+                                        class="text-center py-10 text-slate-500"
+                                    >
+                                        Loading...
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ================================================= -->
+            <!-- TICKET DETAILS -->
+            <!-- ================================================= -->
+
+            <section
+                id="section-ticketDetails"
+                class="page-section hidden"
+            >
+
+                <button
+                    onclick="showSection('tickets')"
+                    class="mb-5 text-blue-600 font-semibold"
+                >
+                    ← Back to Tickets
+                </button>
+
+
+                <div
+                    id="ticketDetails"
+                    class="space-y-5"
+                >
+                    Loading...
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- ============================================================= -->
+<!-- ARTICLE MODAL -->
+<!-- ============================================================= -->
+
+<div
+    id="articleModal"
+    class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4"
+>
+
+    <div class="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+
+        <div class="p-5 border-b flex justify-between items-center">
+
+            <h3 class="text-xl font-bold">
+                Create Knowledge Article
+            </h3>
+
+            <button
+                onclick="closeArticleModal()"
+                class="text-xl"
+            >
+                ✕
+            </button>
+
+        </div>
+
+
+        <form
+            id="articleForm"
+            class="p-6 space-y-5"
+        >
+
+            <div>
+
+                <label class="block font-semibold text-sm mb-2">
+                    Title
+                </label>
+
+                <input
+                    id="articleTitle"
+                    required
+                    class="w-full px-4 py-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Example: How to reset a Windows password"
+                >
+
+            </div>
+
+
+            <div>
+
+                <label class="block font-semibold text-sm mb-2">
+                    Category
+                </label>
+
+                <select
+                    id="articleCategory"
+                    class="w-full px-4 py-3 border rounded-lg"
+                >
+
+                    <option value="">
+                        No category
+                    </option>
+
+                    <option value="1">Hardware</option>
+                    <option value="2">Software</option>
+                    <option value="3">Network</option>
+                    <option value="4">Printer</option>
+                    <option value="5">Email</option>
+                    <option value="6">User Account</option>
+                    <option value="7">Internet</option>
+                    <option value="8">Security</option>
+                    <option value="9">System Access</option>
+                    <option value="10">Other</option>
+
+                </select>
+
+            </div>
+
+
+            <div>
+
+                <label class="block font-semibold text-sm mb-2">
+                    Status
+                </label>
+
+                <select
+                    id="articleStatus"
+                    class="w-full px-4 py-3 border rounded-lg"
+                >
+
+                    <option value="published">
+                        Published
+                    </option>
+
+                    <option value="draft">
+                        Draft
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div>
+
+                <label class="block font-semibold text-sm mb-2">
+                    Article Content
+                </label>
+
+                <textarea
+                    id="articleContent"
+                    required
+                    rows="10"
+                    placeholder="Write the solution or troubleshooting guide..."
+                    class="w-full px-4 py-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+                ></textarea>
+
+            </div>
+
+
+            <div class="flex justify-end gap-3">
+
+                <button
+                    type="button"
+                    onclick="closeArticleModal()"
+                    class="px-5 py-3 border rounded-lg"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="px-5 py-3 bg-blue-600 text-white rounded-lg"
+                >
+                    Create Article
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ============================================================= -->
+<!-- ASSET MODAL -->
+<!-- ============================================================= -->
+
+<div
+    id="assetModal"
+    class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4"
+>
+
+    <div class="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+
+        <div class="p-5 border-b flex justify-between items-center">
+
+            <h3 class="text-xl font-bold">
+                Add IT Asset
+            </h3>
+
+            <button
+                onclick="closeAssetModal()"
+                class="text-xl"
+            >
+                ✕
+            </button>
+
+        </div>
+
+
+        <form
+            id="assetForm"
+            class="p-6 space-y-5"
+        >
+
+            <div class="grid md:grid-cols-2 gap-5">
+
+                <div>
+
+                    <label class="block font-semibold text-sm mb-2">
+                        Asset Tag *
+                    </label>
+
+                    <input
+                        id="assetTag"
+                        required
+                        placeholder="IT-LAP-001"
+                        class="w-full px-4 py-3 border rounded-lg"
+                    >
+
+                </div>
+
+
+                <div>
+
+                    <label class="block font-semibold text-sm mb-2">
+                        Asset Type *
+                    </label>
+
+                    <select
+                        id="assetType"
+                        required
+                        class="w-full px-4 py-3 border rounded-lg"
+                    >
+
+                        <option value="">
+                            Select type
+                        </option>
+
+                        <option value="Laptop">
+                            Laptop
+                        </option>
+
+                        <option value="Desktop">
+                            Desktop
+                        </option>
+
+                        <option value="Printer">
+                            Printer
+                        </option>
+
+                        <option value="Monitor">
+                            Monitor
+                        </option>
+
+                        <option value="Router">
+                            Router
+                        </option>
+
+                        <option value="Switch">
+                            Network Switch
+                        </option>
+
+                        <option value="Server">
+                            Server
+                        </option>
+
+                        <option value="Phone">
+                            Phone
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="grid md:grid-cols-2 gap-5">
+
+                <div>
+
+                    <label class="block font-semibold text-sm mb-2">
+                        Brand
+                    </label>
+
+                    <input
+                        id="assetBrand"
+                        placeholder="HP, Dell, Lenovo..."
+                        class="w-full px-4 py-3 border rounded-lg"
+                    >
+
+                </div>
+
+
+                <div>
+
+                    <label class="block font-semibold text-sm mb-2">
+                        Model
+                    </label>
+
+                    <input
+                        id="assetModel"
+                        placeholder="EliteBook 845"
+                        class="w-full px-4 py-3 border rounded-lg"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div>
+
+                <label class="block font-semibold text-sm mb-2">
+                    Serial Number
+                </label>
+
+                <input
+                    id="assetSerial"
+                    class="w-full px-4 py-3 border rounded-lg"
+                >
+
+            </div>
+
+
+            <div>
+
+                <label class="block font-semibold text-sm mb-2">
+                    Department
+                </label>
+
+                <select
+                    id="assetDepartment"
+                    class="w-full px-4 py-3 border rounded-lg"
+                >
+
+                    <option value="">
+                        No department
+                    </option>
+
+                    <option value="1">
+                        Information Technology
+                    </option>
+
+                    <option value="2">
+                        Human Resources
+                    </option>
+
+                    <option value="3">
+                        Finance
+                    </option>
+
+                    <option value="4">
+                        Administration
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div>
+
+                <label class="block font-semibold text-sm mb-2">
+                    Status
+                </label>
+
+                <select
+                    id="assetStatus"
+                    class="w-full px-4 py-3 border rounded-lg"
+                >
+
+                    <option value="Available">
+                        Available
+                    </option>
+
+                    <option value="Maintenance">
+                        Maintenance
+                    </option>
+
+                    <option value="Retired">
+                        Retired
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="flex justify-end gap-3">
+
+                <button
+                    type="button"
+                    onclick="closeAssetModal()"
+                    class="px-5 py-3 border rounded-lg"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="px-5 py-3 bg-blue-600 text-white rounded-lg"
+                >
+                    Add Asset
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ============================================================= -->
+<!-- USER MODAL -->
+<!-- ============================================================= -->
+
+<div
+    id="userModal"
+    class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4"
+>
+
+    <div class="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+
+        <div class="p-5 border-b flex justify-between items-center">
+
+            <h3 class="text-xl font-bold">
+                Create User
+            </h3>
+
+            <button
+                onclick="closeUserModal()"
+                class="text-xl"
+            >
+                ✕
+            </button>
+
+        </div>
+
+
+        <form
+            id="userForm"
+            class="p-6 space-y-5"
+        >
+
+            <div class="grid md:grid-cols-2 gap-5">
+
+                <div>
+
+                    <label class="block text-sm font-semibold mb-2">
+                        Full Name
+                    </label>
+
+                    <input
+                        id="userFullName"
+                        required
+                        class="w-full px-4 py-3 border rounded-lg"
+                    >
+
+                </div>
+
+
+                <div>
+
+                    <label class="block text-sm font-semibold mb-2">
+                        Username
+                    </label>
+
+                    <input
+                        id="userUsername"
+                        required
+                        class="w-full px-4 py-3 border rounded-lg"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="grid md:grid-cols-2 gap-5">
+
+                <div>
+
+                    <label class="block text-sm font-semibold mb-2">
+                        Email
+                    </label>
+
+                    <input
+                        id="userEmail"
+                        type="email"
+                        required
+                        class="w-full px-4 py-3 border rounded-lg"
+                    >
+
+                </div>
+
+
+                <div>
+
+                    <label class="block text-sm font-semibold mb-2">
+                        Phone
+                    </label>
+
+                    <input
+                        id="userPhone"
+                        class="w-full px-4 py-3 border rounded-lg"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="grid md:grid-cols-2 gap-5">
+
+                <div>
+
+                    <label class="block text-sm font-semibold mb-2">
+                        Password
+                    </label>
+
+                    <input
+                        id="userPassword"
+                        type="password"
+                        required
+                        class="w-full px-4 py-3 border rounded-lg"
+                    >
+
+                </div>
+
+
+                <div>
+
+                    <label class="block text-sm font-semibold mb-2">
+                        Role
+                    </label>
+
+                    <select
+                        id="userRole"
+                        required
+                        class="w-full px-4 py-3 border rounded-lg"
+                    >
+
+                        <option value="3">
+                            Employee
+                        </option>
+
+                        <option value="2">
+                            Help Desk
+                        </option>
+
+                        <option value="1">
+                            Admin
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div>
+
+                <label class="block text-sm font-semibold mb-2">
+                    Department
+                </label>
+
+                <select
+                    id="userDepartment"
+                    class="w-full px-4 py-3 border rounded-lg"
+                >
+
+                    <option value="">
+                        Select department
+                    </option>
+
+                    <option value="1">
+                        Information Technology
+                    </option>
+
+                    <option value="2">
+                        Human Resources
+                    </option>
+
+                    <option value="3">
+                        Finance
+                    </option>
+
+                    <option value="4">
+                        Administration
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="flex justify-end gap-3">
+
+                <button
+                    type="button"
+                    onclick="closeUserModal()"
+                    class="px-5 py-3 border rounded-lg"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="px-5 py-3 bg-blue-600 text-white rounded-lg"
+                >
+                    Create User
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ============================================================= -->
+<!-- JAVASCRIPT -->
+<!-- ============================================================= -->
+
+<script>
+
+const API = "http://localhost:5000/api";
+
+const token =
+    localStorage.getItem("helpdeskToken");
+
+const currentUser =
+    JSON.parse(
+        localStorage.getItem("helpdeskUser") || "null"
+    );
+
+let allTickets = [];
+let allUsers = [];
+let allKnowledge = [];
+let allAssets = [];
+
+
+// =============================================================
+// AUTH CHECK
+// =============================================================
+
+if (!token || !currentUser) {
+
+    window.location.href = "../index.html";
+
+}
+
+
+// =============================================================
+// INITIALIZATION
+// =============================================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        setupUserInterface();
+
+        loadTickets();
+
+        loadKnowledgeBase();
+
+        if (
+            currentUser.role === "admin"
+        ) {
+
+            loadUsers();
+
+        }
+
+        if (
+            currentUser.role === "admin" ||
+            currentUser.role === "helpdesk"
+        ) {
+
+            loadAssets();
+
+        }
+
+    }
+);
+
+
+// =============================================================
+// USER INTERFACE
+// =============================================================
+
+function setupUserInterface() {
+
+    const name =
+        currentUser.full_name ||
+        currentUser.username ||
+        "User";
+
+    const role =
+        currentUser.role ||
+        "employee";
+
+
+    document.getElementById(
+        "sidebarUserName"
+    ).textContent = name;
+
+
+    document.getElementById(
+        "welcomeName"
+    ).textContent = name.split(" ")[0];
+
+
+    document.getElementById(
+        "sidebarUserRole"
+    ).textContent = role;
+
+
+    document.getElementById(
+        "headerUserRole"
+    ).textContent = role;
+
+
+    document.getElementById(
+        "sidebarAvatar"
+    ).textContent =
+        name.charAt(0).toUpperCase();
+
+
+    if (
+        role === "admin"
+    ) {
+
+        document.getElementById(
+            "userManagementNav"
+        ).classList.remove("hidden");
+
+    }
+
+
+    if (
+        role === "admin" ||
+        role === "helpdesk"
+    ) {
+
+        document.getElementById(
+            "assetsNav"
+        ).classList.remove("hidden");
+
+
+        document.getElementById(
+            "createAssetBtn"
+        ).classList.remove("hidden");
+
+
+        document.getElementById(
+            "createArticleBtn"
+        ).classList.remove("hidden");
+
+    }
+
+}
+
+
+// =============================================================
+// API HELPER
+// =============================================================
+
+async function apiFetch(
+    endpoint,
+    options = {}
+) {
+
+    const response =
+        await fetch(
+            API + endpoint,
+            {
+                ...options,
+
+                headers: {
+                    "Content-Type":
+                        "application/json",
+
+                    "Authorization":
+                        `Bearer ${token}`,
+
+                    ...(options.headers || {})
+                }
+            }
+        );
+
+
+    const data =
+        await response.json()
+            .catch(() => ({}));
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            data.message ||
+            "Request failed"
+        );
+
+    }
+
+
+    return data;
+
+}
+
+
+// =============================================================
+// NAVIGATION
+// =============================================================
+
+function showSection(section) {
+
+    document
+        .querySelectorAll(".page-section")
+        .forEach(
+            sectionElement => {
+                sectionElement.classList.add("hidden");
+            }
+        );
+
+
+    const target =
+        document.getElementById(
+            `section-${section}`
+        );
+
+
+    if (target) {
+
+        target.classList.remove("hidden");
+
+    }
+
+
+    document
+        .querySelectorAll(".nav-btn")
+        .forEach(
+            button => {
+
+                button.classList.remove(
+                    "bg-blue-600"
+                );
+
+                button.classList.add(
+                    "hover:bg-slate-800"
+                );
+
+            }
+        );
+
+
+    const activeButton =
+        document.querySelector(
+            `.nav-btn[data-section="${section}"]`
+        );
+
+
+    if (activeButton) {
+
+        activeButton.classList.add(
+            "bg-blue-600"
+        );
+
+        activeButton.classList.remove(
+            "hover:bg-slate-800"
+        );
+
+    }
+
+
+    const titles = {
+
+        dashboard: [
+            "Dashboard",
+            "IT support overview"
+        ],
+
+        tickets: [
+            "Tickets",
+            "Manage and track support tickets"
+        ],
+
+        createTicket: [
+            "Create Ticket",
+            "Submit a new IT support request"
+        ],
+
+        knowledgeBase: [
+            "Knowledge Base",
+            "Troubleshooting guides and solutions"
+        ],
+
+        assets: [
+            "Asset Management",
+            "Manage organizational IT equipment"
+        ],
+
+        reports: [
+            "Reports",
+            "Help desk performance overview"
+        ],
+
+        users: [
+            "User Management",
+            "Manage system users and access"
+        ],
+
+        ticketDetails: [
+            "Ticket Details",
+            "View and manage ticket information"
+        ]
+
+    };
+
+
+    if (titles[section]) {
+
+        document.getElementById(
+            "pageTitle"
+        ).textContent =
+            titles[section][0];
+
+
+        document.getElementById(
+            "pageSubtitle"
+        ).textContent =
+            titles[section][1];
+
+    }
+
+
+    if (window.innerWidth < 768) {
+
+        document
+            .getElementById("sidebar")
+            .classList.add("-translate-x-full");
+
+        document
+            .getElementById("sidebarOverlay")
+            .classList.add("hidden");
+
+    }
+
+
+    if (section === "dashboard") {
+
+        loadDashboard();
+
+    }
+
+    if (section === "tickets") {
+
+        loadTickets();
+
+    }
+
+    if (section === "knowledgeBase") {
+
+        loadKnowledgeBase();
+
+    }
+
+    if (section === "assets") {
+
+        loadAssets();
+
+    }
+
+    if (section === "users") {
+
+        loadUsers();
+
+    }
+
+    if (section === "reports") {
+
+        updateReports();
+
+    }
+
+}
+
+
+// =============================================================
+// CURRENT SECTION REFRESH
+// =============================================================
+
+function loadCurrentSection() {
+
+    const visible =
+        document.querySelector(
+            ".page-section:not(.hidden)"
+        );
+
+
+    if (!visible) {
+
+        loadDashboard();
+
+        return;
+
+    }
+
+
+    const section =
+        visible.id.replace(
+            "section-",
+            ""
+        );
+
+
+    showSection(section);
+
+}
+
+
+// =============================================================
+// SIDEBAR
+// =============================================================
+
+function toggleSidebar() {
+
+    const sidebar =
+        document.getElementById(
+            "sidebar"
+        );
+
+    const overlay =
+        document.getElementById(
+            "sidebarOverlay"
+        );
+
+
+    const closed =
+        sidebar.classList.contains(
+            "-translate-x-full"
+        );
+
+
+    if (closed) {
+
+        sidebar.classList.remove(
+            "-translate-x-full"
+        );
+
+        overlay.classList.remove(
+            "hidden"
+        );
+
+    } else {
+
+        sidebar.classList.add(
+            "-translate-x-full"
+        );
+
+        overlay.classList.add(
+            "hidden"
+        );
+
+    }
+
+}
+
+
+// =============================================================
+// LOGOUT
+// =============================================================
+
+function logout() {
+
+    localStorage.removeItem(
+        "helpdeskToken"
+    );
+
+    localStorage.removeItem(
+        "helpdeskUser"
+    );
+
+    window.location.href =
+        "../index.html";
+
+}
+
+
+// =============================================================
+// TICKETS
+// =============================================================
+
+async function loadTickets() {
+
+    try {
+
+        const data =
+            await apiFetch(
+                "/tickets"
+            );
+
+
+        allTickets =
+            data.tickets ||
+            data.data ||
+            [];
+
+
+        renderTickets();
+
+        updateDashboardStats();
+
+        renderRecentTickets();
+
+        updateReports();
+
+    } catch (error) {
+
+        console.error(error);
+
+        document.getElementById(
+            "ticketsTable"
+        ).innerHTML = `
+            <tr>
+                <td colspan="6"
+                    class="text-center py-10 text-red-500">
+                    ${escapeHtml(error.message)}
+                </td>
+            </tr>
+        `;
+
+    }
+
+}
+
+
+function renderTickets(
+    tickets = allTickets
+) {
+
+    const table =
+        document.getElementById(
+            "ticketsTable"
+        );
+
+
+    if (!tickets.length) {
+
+        table.innerHTML = `
+            <tr>
+                <td colspan="6"
+                    class="text-center py-10 text-slate-500">
+                    No tickets found.
+                </td>
+            </tr>
+        `;
+
+        return;
+
+    }
+
+
+    table.innerHTML =
+        tickets.map(ticket => `
+
+            <tr
+                onclick="openTicket(${ticket.id})"
+                class="border-t hover:bg-slate-50 cursor-pointer"
+            >
+
+                <td class="px-5 py-4 font-semibold text-blue-600">
+                    ${escapeHtml(ticket.ticket_number || "#" + ticket.id)}
+                </td>
+
+                <td class="px-5 py-4">
+                    ${escapeHtml(ticket.subject || "-")}
+                </td>
+
+                <td class="px-5 py-4">
+                    ${escapeHtml(ticket.category || "-")}
+                </td>
+
+                <td class="px-5 py-4">
+                    ${priorityBadge(ticket.priority)}
+                </td>
+
+                <td class="px-5 py-4">
+                    ${statusBadge(ticket.status)}
+                </td>
+
+                <td class="px-5 py-4 text-sm text-slate-500">
+                    ${formatDate(ticket.created_at)}
+                </td>
+
+            </tr>
+
+        `).join("");
+
+}
+
+
+function filterTickets() {
+
+    const query =
+        document.getElementById(
+            "ticketSearch"
+        ).value
+            .toLowerCase();
+
+
+    const filtered =
+        allTickets.filter(
+            ticket =>
+                JSON.stringify(ticket)
+                    .toLowerCase()
+                    .includes(query)
+        );
+
+
+    renderTickets(filtered);
+
+}
+
+
+// =============================================================
+// DASHBOARD
+// =============================================================
+
+function updateDashboardStats() {
+
+    const total =
+        allTickets.length;
+
+
+    const open =
+        allTickets.filter(
+            ticket =>
+                String(ticket.status)
+                    .toLowerCase() === "open"
+        ).length;
+
+
+    const progress =
+        allTickets.filter(
+            ticket =>
+                String(ticket.status)
+                    .toLowerCase()
+                    .includes("progress")
+        ).length;
+
+
+    const resolved =
+        allTickets.filter(
+            ticket =>
+                ["resolved", "closed"]
+                    .includes(
+                        String(ticket.status)
+                            .toLowerCase()
+                    )
+        ).length;
+
+
+    document.getElementById(
+        "statTotal"
+    ).textContent = total;
+
+
+    document.getElementById(
+        "statOpen"
+    ).textContent = open;
+
+
+    document.getElementById(
+        "statProgress"
+    ).textContent = progress;
+
+
+    document.getElementById(
+        "statResolved"
+    ).textContent = resolved;
+
+}
+
+
+function loadDashboard() {
+
+    updateDashboardStats();
+
+    renderRecentTickets();
+
+}
+
+
+function renderRecentTickets() {
+
+    const container =
+        document.getElementById(
+            "recentTickets"
+        );
+
+
+    const recent =
+        [...allTickets]
+            .sort(
+                (a, b) =>
+                    new Date(b.created_at) -
+                    new Date(a.created_at)
+            )
+            .slice(0, 5);
+
+
+    if (!recent.length) {
+
+        container.innerHTML = `
+            <div class="text-center py-8 text-slate-500">
+                No tickets available.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        recent.map(ticket => `
+
+            <div
+                onclick="openTicket(${ticket.id})"
+                class="flex flex-col md:flex-row md:items-center justify-between gap-3 p-4 border rounded-lg mb-3 hover:bg-slate-50 cursor-pointer"
+            >
+
+                <div>
+
+                    <p class="font-semibold text-blue-600">
+                        ${escapeHtml(ticket.ticket_number || "#" + ticket.id)}
+                    </p>
+
+                    <p class="font-medium mt-1">
+                        ${escapeHtml(ticket.subject || "-")}
+                    </p>
+
+                    <p class="text-xs text-slate-500 mt-1">
+                        ${formatDate(ticket.created_at)}
+                    </p>
+
+                </div>
+
+                <div class="flex gap-2">
+
+                    ${priorityBadge(ticket.priority)}
+
+                    ${statusBadge(ticket.status)}
+
+                </div>
+
+            </div>
+
+        `).join("");
+
+}
+
+
+// =============================================================
+// CREATE TICKET
+// =============================================================
+
+document
+    .getElementById("ticketForm")
+    .addEventListener(
+        "submit",
+        async event => {
+
+            event.preventDefault();
+
+
+            const button =
+                event.target.querySelector(
+                    "button[type='submit']"
+                );
+
+
+            button.disabled = true;
+
+            button.textContent =
+                "Submitting...";
+
+
+            try {
+
+                const data =
+                    await apiFetch(
+                        "/tickets",
+                        {
+                            method: "POST",
+
+                            body: JSON.stringify({
+
+                                subject:
+                                    document.getElementById(
+                                        "ticketSubject"
+                                    ).value,
+
+                                category_id:
+                                    document.getElementById(
+                                        "ticketCategory"
+                                    ).value,
+
+                                priority_id:
+                                    document.getElementById(
+                                        "ticketPriority"
+                                    ).value,
+
+                                description:
+                                    document.getElementById(
+                                        "ticketDescription"
+                                    ).value
+
+                            })
+
+                        }
+                    );
+
+
+                alert(
+                    data.message ||
+                    "Ticket created successfully."
+                );
+
+
+                event.target.reset();
+
+                document.getElementById(
+                    "ticketPriority"
+                ).value = "2";
+
+
+                await loadTickets();
+
+                showSection("tickets");
+
+
+            } catch (error) {
+
+                alert(
+                    error.message
+                );
+
+            } finally {
+
+                button.disabled = false;
+
+                button.textContent =
+                    "Submit Ticket";
+
+            }
+
+        }
+    );
+
+
+// =============================================================
+// TICKET DETAILS
+// =============================================================
+
+async function openTicket(id) {
+
+    showSection("ticketDetails");
+
+
+    const container =
+        document.getElementById(
+            "ticketDetails"
+        );
+
+
+    container.innerHTML = `
+        <div class="bg-white rounded-xl border p-10 text-center">
+            Loading ticket...
+        </div>
+    `;
+
+
+    try {
+
+        const data =
+            await apiFetch(
+                `/tickets/${id}`
+            );
+
+
+        const ticket =
+            data.ticket ||
+            data.data;
+
+
+        renderTicketDetails(
+            ticket
+        );
+
+
+    } catch (error) {
+
+        container.innerHTML = `
+            <div class="bg-white rounded-xl border p-10 text-center text-red-500">
+                ${escapeHtml(error.message)}
+            </div>
+        `;
+
+    }
+
+}
+
+
+function renderTicketDetails(ticket) {
+
+    const container =
+        document.getElementById(
+            "ticketDetails"
+        );
+
+
+    const comments =
+        ticket.comments ||
+        [];
+
+
+    const history =
+        ticket.history ||
+        [];
+
+
+    const managementAllowed =
+        currentUser.role === "admin" ||
+        currentUser.role === "helpdesk";
+
+
+    container.innerHTML = `
+
+        <div class="bg-white rounded-xl border p-6">
+
+            <div class="flex flex-col md:flex-row md:justify-between gap-4">
+
+                <div>
+
+                    <p class="text-blue-600 font-semibold">
+                        ${escapeHtml(ticket.ticket_number || "#" + ticket.id)}
+                    </p>
+
+                    <h3 class="text-2xl font-bold mt-2">
+                        ${escapeHtml(ticket.subject || "-")}
+                    </h3>
+
+                </div>
+
+                <div class="flex gap-2">
+                    ${priorityBadge(ticket.priority)}
+                    ${statusBadge(ticket.status)}
+                </div>
+
+            </div>
+
+
+            <div class="grid md:grid-cols-3 gap-4 mt-6">
+
+                <div>
+                    <p class="text-xs text-slate-500">
+                        Category
+                    </p>
+
+                    <p class="font-semibold">
+                        ${escapeHtml(ticket.category || "-")}
+                    </p>
+                </div>
+
+
+                <div>
+                    <p class="text-xs text-slate-500">
+                        Created By
+                    </p>
+
+                    <p class="font-semibold">
+                        ${escapeHtml(ticket.user_name || ticket.created_by || "-")}
+                    </p>
+                </div>
+
+
+                <div>
+                    <p class="text-xs text-slate-500">
+                        Assigned To
+                    </p>
+
+                    <p class="font-semibold">
+                        ${escapeHtml(ticket.assigned_to || "Unassigned")}
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="mt-6">
+
+                <p class="text-sm font-semibold mb-2">
+                    Description
+                </p>
+
+                <div class="bg-slate-50 rounded-lg p-4 whitespace-pre-wrap">
+                    ${escapeHtml(ticket.description || "-")}
+                </div>
+
+            </div>
+
+
+            ${
+                managementAllowed
+                    ? `
+                    <div class="mt-6 border-t pt-6">
+
+                        <h4 class="font-bold mb-4">
+                            Ticket Management
+                        </h4>
+
+                        <div class="grid md:grid-cols-3 gap-4">
+
+                            <div>
+
+                                <label class="block text-xs font-semibold mb-2">
+                                    Status
+                                </label>
+
+                                <select
+                                    id="detailStatus"
+                                    onchange="changeTicketStatus(${ticket.id}, this.value)"
+                                    class="w-full px-3 py-2 border rounded-lg"
+                                >
+
+                                    ${statusOptions(ticket.status)}
+
+                                </select>
+
+                            </div>
+
+
+                            <div>
+
+                                <label class="block text-xs font-semibold mb-2">
+                                    Priority
+                                </label>
+
+                                <select
+                                    id="detailPriority"
+                                    onchange="changeTicketPriority(${ticket.id}, this.value)"
+                                    class="w-full px-3 py-2 border rounded-lg"
+                                >
+
+                                    ${priorityOptions(ticket.priority)}
+
+                                </select>
+
+                            </div>
+
+
+                            <div>
+
+                                <label class="block text-xs font-semibold mb-2">
+                                    Assign Technician
+                                </label>
+
+                                <select
+                                    id="technicianSelect"
+                                    class="w-full px-3 py-2 border rounded-lg"
+                                    onchange="assignTicket(${ticket.id}, this.value)"
+                                >
+
+                                    <option value="">
+                                        Select technician
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                    `
+                    : ""
+            }
+
+        </div>
+
+
+        <div class="bg-white rounded-xl border p-6">
+
+            <h4 class="font-bold text-lg mb-5">
+                Comments
+            </h4>
+
+
+            <div class="space-y-4 mb-5">
+
+                ${
+                    comments.length
+                        ? comments.map(comment => `
+
+                            <div class="border rounded-lg p-4">
+
+                                <div class="flex justify-between gap-3">
+
+                                    <p class="font-semibold">
+                                        ${escapeHtml(comment.full_name || comment.user_name || "User")}
+                                    </p>
+
+                                    <p class="text-xs text-slate-500">
+                                        ${formatDate(comment.created_at)}
+                                    </p>
+
+                                </div>
+
+                                <p class="mt-2 whitespace-pre-wrap">
+                                    ${escapeHtml(comment.comment)}
+                                </p>
+
+                            </div>
+
+                        `).join("")
+                        : `
+                            <p class="text-slate-500">
+                                No comments yet.
+                            </p>
+                        `
+                }
+
+            </div>
+
+
+            <form
+                onsubmit="addComment(event, ${ticket.id})"
+                class="flex flex-col gap-3"
+            >
+
+                <textarea
+                    id="commentText"
+                    required
+                    rows="3"
+                    placeholder="Write a comment..."
+                    class="w-full px-4 py-3 border rounded-lg"
+                ></textarea>
+
+                <button
+                    class="self-start bg-blue-600 text-white px-5 py-3 rounded-lg"
+                >
+                    Add Comment
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <div class="bg-white rounded-xl border p-6">
+
+            <h4 class="font-bold text-lg mb-5">
+                Ticket History
+            </h4>
+
+
+            ${
+                history.length
+                    ? history.map(item => `
+
+                        <div class="border-l-2 border-blue-500 pl-4 pb-5">
+
+                            <p class="font-semibold">
+                                ${escapeHtml(item.action || "Updated")}
+                            </p>
+
+                            <p class="text-sm text-slate-500 mt-1">
+                                ${escapeHtml(item.old_value || "")}
+                                ${item.new_value ? " → " + escapeHtml(item.new_value) : ""}
+                            </p>
+
+                            <p class="text-xs text-slate-400 mt-1">
+                                ${formatDate(item.created_at)}
+                            </p>
+
+                        </div>
+
+                    `).join("")
+                    : `
+                        <p class="text-slate-500">
+                            No history available.
+                        </p>
+                    `
+            }
+
+        </div>
+
+    `;
+
+
+    if (managementAllowed) {
+
+        loadTechnicians(
+            ticket.assigned_to_id
+        );
+
+    }
+
+}
+
+
+async function loadTechnicians(
+    selectedId = null
+) {
+
+    try {
+
+        const data =
+            await apiFetch(
+                "/tickets/technicians"
+            );
+
+
+        const technicians =
+            data.technicians ||
+            data.users ||
+            [];
+
+
+        const select =
+            document.getElementById(
+                "technicianSelect"
+            );
+
+
+        if (!select) return;
+
+
+        select.innerHTML = `
+            <option value="">
+                Select technician
+            </option>
+        `;
+
+
+        technicians.forEach(
+            technician => {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+                option.value =
+                    technician.id;
+
+                option.textContent =
+                    technician.full_name;
+
+                if (
+                    String(technician.id) ===
+                    String(selectedId)
+                ) {
+
+                    option.selected =
+                        true;
+
+                }
+
+                select.appendChild(
+                    option
+                );
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Technician loading error:",
+            error
+        );
+
+    }
+
+}
+
+
+async function assignTicket(
+    ticketId,
+    technicianId
+) {
+
+    if (!technicianId) return;
+
+
+    try {
+
+        const data =
+            await apiFetch(
+                `/tickets/${ticketId}/assign`,
+                {
+                    method: "PUT",
+
+                    body: JSON.stringify({
+                        assigned_to:
+                            technicianId
+                    })
+
+                }
+            );
+
+
+        alert(
+            data.message ||
+            "Ticket assigned successfully."
+        );
+
+
+        openTicket(ticketId);
+
+        loadTickets();
+
+
+    } catch (error) {
+
+        alert(
+            error.message
+        );
+
+    }
+
+}
+
+
+async function changeTicketStatus(
+    ticketId,
+    status
+) {
+
+    try {
+
+        const data =
+            await apiFetch(
+                `/tickets/${ticketId}/status`,
+                {
+                    method: "PUT",
+
+                    body: JSON.stringify({
+                        status
+                    })
+
+                }
+            );
+
+
+        alert(
+            data.message ||
+            "Status updated."
+        );
+
+
+        openTicket(ticketId);
+
+        loadTickets();
+
+
+    } catch (error) {
+
+        alert(
+            error.message
+        );
+
+    }
+
+}
+
+
+async function changeTicketPriority(
+    ticketId,
+    priority
+) {
+
+    try {
+
+        const data =
+            await apiFetch(
+                `/tickets/${ticketId}/priority`,
+                {
+                    method: "PUT",
+
+                    body: JSON.stringify({
+                        priority_id:
+                            priority
+                    })
+
+                }
+            );
+
+
+        alert(
+            data.message ||
+            "Priority updated."
+        );
+
+
+        openTicket(ticketId);
+
+        loadTickets();
+
+
+    } catch (error) {
+
+        alert(
+            error.message
+        );
+
+    }
+
+}
+
+
+async function addComment(
+    event,
+    ticketId
+) {
+
+    event.preventDefault();
+
+
+    const textarea =
+        document.getElementById(
+            "commentText"
+        );
+
+
+    const comment =
+        textarea.value.trim();
+
+
+    if (!comment) return;
+
+
+    try {
+
+        const data =
+            await apiFetch(
+                `/tickets/${ticketId}/comments`,
+                {
+                    method: "POST",
+
+                    body: JSON.stringify({
+                        comment
+                    })
+
+                }
+            );
+
+
+        alert(
+            data.message ||
+            "Comment added."
+        );
+
+
+        openTicket(ticketId);
+
+
+    } catch (error) {
+
+        alert(
+            error.message
+        );
+
+    }
+
+}
+
+
+// =============================================================
+// KNOWLEDGE BASE
+// =============================================================
+
+async function loadKnowledgeBase() {
+
+    try {
+
+        const data =
+            await apiFetch(
+                "/management/knowledge-base"
+            );
+
+
+        allKnowledge =
+            data.articles ||
+            [];
+
+
+        renderKnowledgeBase();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        document.getElementById(
+            "knowledgeGrid"
+        ).innerHTML = `
+            <div class="col-span-full bg-white border rounded-xl p-8 text-center text-red-500">
+                ${escapeHtml(error.message)}
+            </div>
+        `;
+
+    }
+
+}
+
+
+function renderKnowledgeBase(
+    articles = allKnowledge
+) {
+
+    const grid =
+        document.getElementById(
+            "knowledgeGrid"
+        );
+
+
+    if (!articles.length) {
+
+        grid.innerHTML = `
+            <div class="col-span-full bg-white border rounded-xl p-10 text-center">
+
+                <div class="text-4xl mb-3">
+                    📚
+                </div>
+
+                <h3 class="font-bold text-lg">
+                    No articles found
+                </h3>
+
+                <p class="text-slate-500 mt-1">
+                    There are no knowledge base articles yet.
+                </p>
+
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    grid.innerHTML =
+        articles.map(article => `
+
+            <article
+                class="bg-white rounded-xl border shadow-sm p-5 hover:shadow-md transition"
+            >
+
+                <div class="flex items-start justify-between gap-3">
+
+                    <div class="w-11 h-11 rounded-lg bg-blue-100 flex items-center justify-center text-xl shrink-0">
+                        📖
+                    </div>
+
+                    ${
+                        article.status === "draft"
+                            ? `
+                                <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700">
+                                    Draft
+                                </span>
+                            `
+                            : `
+                                <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">
+                                    Published
+                                </span>
+                            `
+                    }
+
+                </div>
+
+
+                <h3 class="font-bold text-lg mt-4">
+                    ${escapeHtml(article.title)}
+                </h3>
+
+
+                <p class="text-xs text-blue-600 mt-2">
+                    ${escapeHtml(article.category || "General")}
+                </p>
+
+
+                <p class="text-sm text-slate-600 mt-3 line-clamp-4 whitespace-pre-wrap">
+                    ${escapeHtml(article.content)}
+                </p>
+
+
+                <div class="mt-5 pt-4 border-t flex items-center justify-between">
+
+                    <p class="text-xs text-slate-400">
+                        By ${escapeHtml(article.created_by || "User")}
+                    </p>
+
+
+                    ${
+                        currentUser.role === "admin" ||
+                        currentUser.role === "helpdesk"
+                            ? `
+                                <button
+                                    onclick="deleteArticle(${article.id})"
+                                    class="text-red-600 text-sm font-semibold hover:underline"
+                                >
+                                    Delete
+                                </button>
+                            `
+                            : ""
+                    }
+
+                </div>
+
+            </article>
+
+        `).join("");
+
+}
+
+
+function filterKnowledge() {
+
+    const query =
+        document.getElementById(
+            "knowledgeSearch"
+        ).value
+            .toLowerCase();
+
+
+    const filtered =
+        allKnowledge.filter(
+            article =>
+                (
+                    article.title +
+                    " " +
+                    article.content +
+                    " " +
+                    (article.category || "")
+                )
+                    .toLowerCase()
+                    .includes(query)
+        );
+
+
+    renderKnowledgeBase(
+        filtered
+    );
+
+}
+
+
+function openArticleModal() {
+
+    const modal =
+        document.getElementById(
+            "articleModal"
+        );
+
+
+    modal.classList.remove(
+        "hidden"
+    );
+
+    modal.classList.add(
+        "flex"
+    );
+
+}
+
+
+function closeArticleModal() {
+
+    const modal =
+        document.getElementById(
+            "articleModal"
+        );
+
+
+    modal.classList.add(
+        "hidden"
+    );
+
+    modal.classList.remove(
+        "flex"
+    );
+
+}
+
+
+document
+    .getElementById("articleForm")
+    .addEventListener(
+        "submit",
+        async event => {
+
+            event.preventDefault();
+
+
+            try {
+
+                const data =
+                    await apiFetch(
+                        "/management/knowledge-base",
+                        {
+                            method: "POST",
+
+                            body: JSON.stringify({
+
+                                title:
+                                    document.getElementById(
+                                        "articleTitle"
+                                    ).value,
+
+                                category_id:
+                                    document.getElementById(
+                                        "articleCategory"
+                                    ).value || null,
+
+                                content:
+                                    document.getElementById(
+                                        "articleContent"
+                                    ).value,
+
+                                status:
+                                    document.getElementById(
+                                        "articleStatus"
+                                    ).value
+
+                            })
+
+                        }
+                    );
+
+
+                alert(
+                    data.message ||
+                    "Article created successfully."
+                );
+
+
+                event.target.reset();
+
+                closeArticleModal();
+
+                loadKnowledgeBase();
+
+
+            } catch (error) {
+
+                alert(
+                    error.message
+                );
+
+            }
+
+        }
+    );
+
+
+async function deleteArticle(id) {
+
+    if (
+        !confirm(
+            "Are you sure you want to delete this article?"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const data =
+            await apiFetch(
+                `/management/knowledge-base/${id}`,
+                {
+                    method: "DELETE"
+                }
+            );
+
+
+        alert(
+            data.message ||
+            "Article deleted."
+        );
+
+
+        loadKnowledgeBase();
+
+
+    } catch (error) {
+
+        alert(
+            error.message
+        );
+
+    }
+
+}
+
+
+// =============================================================
+// ASSET MANAGEMENT
+// =============================================================
+
+async function loadAssets() {
+
+    if (
+        currentUser.role !== "admin" &&
+        currentUser.role !== "helpdesk"
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const data =
+            await apiFetch(
+                "/management/assets"
+            );
+
+
+        allAssets =
+            data.assets ||
+            [];
+
+
+        renderAssets();
+
+        updateAssetStats();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        document.getElementById(
+            "assetsTable"
+        ).innerHTML = `
+            <tr>
+                <td colspan="7"
+                    class="text-center py-10 text-red-500">
+                    ${escapeHtml(error.message)}
+                </td>
+            </tr>
+        `;
+
+    }
+
+}
+
+
+function renderAssets(
+    assets = allAssets
+) {
+
+    const table =
+        document.getElementById(
+            "assetsTable"
+        );
+
+
+    if (!assets.length) {
+
+        table.innerHTML = `
+            <tr>
+                <td colspan="7"
+                    class="text-center py-10 text-slate-500">
+                    No assets found.
+                </td>
+            </tr>
+        `;
+
+        return;
+
+    }
+
+
+    table.innerHTML =
+        assets.map(asset => `
+
+            <tr class="border-t hover:bg-slate-50">
+
+                <td class="px-5 py-4 font-semibold">
+                    ${escapeHtml(asset.asset_tag)}
+                </td>
+
+                <td class="px-5 py-4">
+                    ${escapeHtml(asset.asset_type)}
+                </td>
+
+                <td class="px-5 py-4">
+                    ${escapeHtml(
+                        [asset.brand, asset.model]
+                            .filter(Boolean)
+                            .join(" ")
+                        || "-"
+                    )}
+                </td>
+
+                <td class="px-5 py-4 text-sm">
+                    ${escapeHtml(asset.serial_number || "-")}
+                </td>
+
+                <td class="px-5 py-4">
+                    ${escapeHtml(asset.assigned_to || "Unassigned")}
+                </td>
+
+                <td class="px-5 py-4">
+                    ${assetStatusBadge(asset.status)}
+                </td>
+
+                <td class="px-5 py-4">
+
+                    <div class="flex gap-2">
+
+                        ${
+                            asset.status !== "Assigned"
+                                ? `
+                                    <button
+                                        onclick="openAssignAssetModal(${asset.id})"
+                                        class="px-3 py-2 text-xs bg-blue-100 text-blue-700 rounded-lg"
+                                    >
+                                        Assign
+                                    </button>
+                                `
+                                : `
+                                    <button
+                                        onclick="updateAssetStatus(${asset.id}, 'Available')"
+                                        class="px-3 py-2 text-xs bg-green-100 text-green-700 rounded-lg"
+                                    >
+                                        Release
+                                    </button>
+                                `
+                        }
+
+
+                        ${
+                            asset.status !== "Maintenance"
+                                ? `
+                                    <button
+                                        onclick="updateAssetStatus(${asset.id}, 'Maintenance')"
+                                        class="px-3 py-2 text-xs bg-yellow-100 text-yellow-700 rounded-lg"
+                                    >
+                                        Maintenance
+                                    </button>
+                                `
+                                : `
+                                    <button
+                                        onclick="updateAssetStatus(${asset.id}, 'Available')"
+                                        class="px-3 py-2 text-xs bg-slate-100 text-slate-700 rounded-lg"
+                                    >
+                                        Available
+                                    </button>
+                                `
+                        }
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+        `).join("");
+
+}
+
+
+function filterAssets() {
+
+    const query =
+        document.getElementById(
+            "assetSearch"
+        ).value
+            .toLowerCase();
+
+
+    const filtered =
+        allAssets.filter(
+            asset =>
+                JSON.stringify(asset)
+                    .toLowerCase()
+                    .includes(query)
+        );
+
+
+    renderAssets(
+        filtered
+    );
+
+}
+
+
+function updateAssetStats() {
+
+    document.getElementById(
+        "assetTotal"
+    ).textContent =
+        allAssets.length;
+
+
+    document.getElementById(
+        "assetAvailable"
+    ).textContent =
+        allAssets.filter(
+            asset =>
+                asset.status === "Available"
+        ).length;
+
+
+    document.getElementById(
+        "assetAssigned"
+    ).textContent =
+        allAssets.filter(
+            asset =>
+                asset.status === "Assigned"
+        ).length;
+
+
+    document.getElementById(
+        "assetMaintenance"
+    ).textContent =
+        allAssets.filter(
+            asset =>
+                asset.status === "Maintenance"
+        ).length;
+
+}
+
+
+function openAssetModal() {
+
+    const modal =
+        document.getElementById(
+            "assetModal"
+        );
+
+
+    modal.classList.remove(
+        "hidden"
+    );
+
+    modal.classList.add(
+        "flex"
+    );
+
+}
+
+
+function closeAssetModal() {
+
+    const modal =
+        document.getElementById(
+            "assetModal"
+        );
+
+
+    modal.classList.add(
+        "hidden"
+    );
+
+    modal.classList.remove(
+        "flex"
+    );
+
+}
+
+
+document
+    .getElementById("assetForm")
+    .addEventListener(
+        "submit",
+        async event => {
+
+            event.preventDefault();
+
+
+            try {
+
+                const data =
+                    await apiFetch(
+                        "/management/assets",
+                        {
+                            method: "POST",
+
+                            body: JSON.stringify({
+
+                                asset_tag:
+                                    document.getElementById(
+                                        "assetTag"
+                                    ).value,
+
+                                asset_type:
+                                    document.getElementById(
+                                        "assetType"
+                                    ).value,
+
+                                brand:
+                                    document.getElementById(
+                                        "assetBrand"
+                                    ).value,
+
+                                model:
+                                    document.getElementById(
+                                        "assetModel"
+                                    ).value,
+
+                                serial_number:
+                                    document.getElementById(
+                                        "assetSerial"
+                                    ).value,
+
+                                department_id:
+                                    document.getElementById(
+                                        "assetDepartment"
+                                    ).value || null,
+
+                                status:
+                                    document.getElementById(
+                                        "assetStatus"
+                                    ).value
+
+                            })
+
+                        }
+                    );
+
+
+                alert(
+                    data.message ||
+                    "Asset created successfully."
+                );
+
+
+                event.target.reset();
+
+                closeAssetModal();
+
+                loadAssets();
+
+
+            } catch (error) {
+
+                alert(
+                    error.message
+                );
+
+            }
+
+        }
+    );
+
+
+// =============================================================
+// ASSET ASSIGNMENT
+// =============================================================
+
+async function openAssignAssetModal(
+    assetId
+) {
+
+    const asset =
+        allAssets.find(
+            item =>
+                String(item.id) ===
+                String(assetId)
+        );
+
+
+    if (!asset) return;
+
+
+    try {
+
+        const data =
+            await apiFetch(
+                "/tickets/technicians"
+            );
+
+
+        const technicians =
+            data.technicians ||
+            data.users ||
+            [];
+
+
+        const options =
+            technicians.map(
+                technician =>
+                    `${technician.id}: ${technician.full_name}`
+            ).join("\n");
+
+
+        const selected =
+            prompt(
+                "Enter the technician/user ID to assign this asset.\n\nAvailable users:\n" +
+                options
+            );
+
+
+        if (!selected) return;
+
+
+        await apiFetch(
+            `/management/assets/${assetId}/assign`,
+            {
+                method: "PUT",
+
+                body: JSON.stringify({
+                    assigned_to:
+                        selected
+                })
+            }
+        );
+
+
+        alert(
+            "Asset assigned successfully."
+        );
+
+
+        loadAssets();
+
+
+    } catch (error) {
+
+        alert(
+            error.message
+        );
+
+    }
+
+}
+
+
+async function updateAssetStatus(
+    assetId,
+    status
+) {
+
+    try {
+
+        const data =
+            await apiFetch(
+                `/management/assets/${assetId}/status`,
+                {
+                    method: "PUT",
+
+                    body: JSON.stringify({
+                        status
+                    })
+
+                }
+            );
+
+
+        alert(
+            data.message ||
+            "Asset status updated."
+        );
+
+
+        loadAssets();
+
+
+    } catch (error) {
+
+        alert(
+            error.message
+        );
+
+    }
+
+}
+
+
+// =============================================================
+// USER MANAGEMENT
+// =============================================================
+
+async function loadUsers() {
+
+    if (
+        currentUser.role !== "admin"
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const data =
+            await apiFetch(
+                "/users"
+            );
+
+
+        allUsers =
+            data.users ||
+            [];
+
+
+        renderUsers();
+
+        updateUserStats();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+
+function renderUsers(
+    users = allUsers
+) {
+
+    const table =
+        document.getElementById(
+            "usersTable"
+        );
+
+
+    if (!users.length) {
+
+        table.innerHTML = `
+            <tr>
+                <td colspan="7"
+                    class="text-center py-10 text-slate-500">
+                    No users found.
+                </td>
+            </tr>
+        `;
+
+        return;
+
+    }
+
+
+    table.innerHTML =
+        users.map(user => `
+
+            <tr class="border-t hover:bg-slate-50">
+
+                <td class="px-5 py-4 font-semibold">
+                    ${escapeHtml(user.full_name)}
+                </td>
+
+                <td class="px-5 py-4">
+                    ${escapeHtml(user.username)}
+                </td>
+
+                <td class="px-5 py-4">
+                    ${escapeHtml(user.email)}
+                </td>
+
+                <td class="px-5 py-4 capitalize">
+                    ${escapeHtml(user.role || "-")}
+                </td>
+
+                <td class="px-5 py-4">
+                    ${escapeHtml(user.department || "-")}
+                </td>
+
+                <td class="px-5 py-4">
+
+                    ${
+                        user.status === "active"
+                            ? `
+                                <span class="px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs">
+                                    Active
+                                </span>
+                            `
+                            : `
+                                <span class="px-2 py-1 rounded-full bg-red-100 text-red-700 text-xs">
+                                    Inactive
+                                </span>
+                            `
+                    }
+
+                </td>
+
+                <td class="px-5 py-4">
+
+                    ${
+                        String(user.id) ===
+                        String(currentUser.id)
+                            ? `
+                                <span class="text-xs text-slate-400">
+                                    Current user
+                                </span>
+                            `
+                            : `
+                                <button
+                                    onclick="toggleUserStatus(${user.id}, '${user.status}')"
+                                    class="px-3 py-2 text-xs rounded-lg ${
+                                        user.status === "active"
+                                            ? "bg-red-100 text-red-700"
+                                            : "bg-green-100 text-green-700"
+                                    }"
+                                >
+                                    ${
+                                        user.status === "active"
+                                            ? "Deactivate"
+                                            : "Activate"
+                                    }
+                                </button>
+                            `
+                    }
+
+                </td>
+
+            </tr>
+
+        `).join("");
+
+}
+
+
+function filterUsers() {
+
+    const query =
+        document.getElementById(
+            "userSearch"
+        ).value
+            .toLowerCase();
+
+
+    const filtered =
+        allUsers.filter(
+            user =>
+                JSON.stringify(user)
+                    .toLowerCase()
+                    .includes(query)
+        );
+
+
+    renderUsers(
+        filtered
+    );
+
+}
+
+
+function updateUserStats() {
+
+    document.getElementById(
+        "userTotal"
+    ).textContent =
+        allUsers.length;
+
+
+    document.getElementById(
+        "userActive"
+    ).textContent =
+        allUsers.filter(
+            user =>
+                user.status === "active"
+        ).length;
+
+
+    document.getElementById(
+        "userHelpdesk"
+    ).textContent =
+        allUsers.filter(
+            user =>
+                user.role === "helpdesk"
+        ).length;
+
+
+    document.getElementById(
+        "userEmployees"
+    ).textContent =
+        allUsers.filter(
+            user =>
+                user.role === "employee"
+        ).length;
+
+}
+
+
+async function toggleUserStatus(
+    id,
+    currentStatus
+) {
+
+    const newStatus =
+        currentStatus === "active"
+            ? "inactive"
+            : "active";
+
+
+    if (
+        !confirm(
+            `Change user status to ${newStatus}?`
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const data =
+            await apiFetch(
+                `/users/${id}/status`,
+                {
+                    method: "PUT",
+
+                    body: JSON.stringify({
+                        status:
+                            newStatus
+                    })
+
+                }
+            );
+
+
+        alert(
+            data.message ||
+            "User status updated."
+        );
+
+
+        loadUsers();
+
+
+    } catch (error) {
+
+        alert(
+            error.message
+        );
+
+    }
+
+}
+
+
+function openUserModal() {
+
+    const modal =
+        document.getElementById(
+            "userModal"
+        );
+
+
+    modal.classList.remove(
+        "hidden"
+    );
+
+    modal.classList.add(
+        "flex"
+    );
+
+}
+
+
+function closeUserModal() {
+
+    const modal =
+        document.getElementById(
+            "userModal"
+        );
+
+
+    modal.classList.add(
+        "hidden"
+    );
+
+    modal.classList.remove(
+        "flex"
+    );
+
+}
+
+
+document
+    .getElementById("userForm")
+    .addEventListener(
+        "submit",
+        async event => {
+
+            event.preventDefault();
+
+
+            try {
+
+                const data =
+                    await apiFetch(
+                        "/users",
+                        {
+                            method: "POST",
+
+                            body: JSON.stringify({
+
+                                full_name:
+                                    document.getElementById(
+                                        "userFullName"
+                                    ).value,
+
+                                username:
+                                    document.getElementById(
+                                        "userUsername"
+                                    ).value,
+
+                                email:
+                                    document.getElementById(
+                                        "userEmail"
+                                    ).value,
+
+                                phone:
+                                    document.getElementById(
+                                        "userPhone"
+                                    ).value,
+
+                                password:
+                                    document.getElementById(
+                                        "userPassword"
+                                    ).value,
+
+                                role_id:
+                                    document.getElementById(
+                                        "userRole"
+                                    ).value,
+
+                                department_id:
+                                    document.getElementById(
+                                        "userDepartment"
+                                    ).value || null
+
+                            })
+
+                        }
+                    );
+
+
+                alert(
+                    data.message ||
+                    "User created successfully."
+                );
+
+
+                event.target.reset();
+
+                closeUserModal();
+
+                loadUsers();
+
+
+            } catch (error) {
+
+                alert(
+                    error.message
+                );
+
+            }
+
+        }
+    );
+
+
+// =============================================================
+// REPORTS
+// =============================================================
+
+function updateReports() {
+
+    const total =
+        allTickets.length;
+
+
+    const open =
+        allTickets.filter(
+            ticket =>
+                String(ticket.status)
+                    .toLowerCase() === "open"
+        ).length;
+
+
+    const resolved =
+        allTickets.filter(
+            ticket =>
+                ["resolved", "closed"]
+                    .includes(
+                        String(ticket.status)
+                            .toLowerCase()
+                    )
+        ).length;
+
+
+    const critical =
+        allTickets.filter(
+            ticket =>
+                String(ticket.priority)
+                    .toLowerCase() ===
+                "critical"
+        ).length;
+
+
+    document.getElementById(
+        "reportTotal"
+    ).textContent = total;
+
+
+    document.getElementById(
+        "reportOpen"
+    ).textContent = open;
+
+
+    document.getElementById(
+        "reportResolved"
+    ).textContent = resolved;
+
+
+    document.getElementById(
+        "reportCritical"
+    ).textContent = critical;
+
+}
+
+
+// =============================================================
+// BADGES
+// =============================================================
+
+function statusBadge(status) {
+
+    const value =
+        String(status || "")
+            .toLowerCase();
+
+
+    let classes =
+        "bg-slate-100 text-slate-700";
+
+
+    if (value === "open") {
+
+        classes =
+            "bg-yellow-100 text-yellow-700";
+
+    } else if (
+        value.includes("progress")
+    ) {
+
+        classes =
+            "bg-blue-100 text-blue-700";
+
+    } else if (
+        value === "assigned"
+    ) {
+
+        classes =
+            "bg-purple-100 text-purple-700";
+
+    } else if (
+        value === "resolved" ||
+        value === "closed"
+    ) {
+
+        classes =
+            "bg-green-100 text-green-700";
+
+    } else if (
+        value === "rejected"
+    ) {
+
+        classes =
+            "bg-red-100 text-red-700";
+
+    }
+
+
+    return `
+        <span class="inline-block px-2 py-1 rounded-full text-xs font-semibold ${classes}">
+            ${escapeHtml(status || "-")}
+        </span>
+    `;
+
+}
+
+
+function priorityBadge(priority) {
+
+    const value =
+        String(priority || "")
+            .toLowerCase();
+
+
+    let classes =
+        "bg-slate-100 text-slate-700";
+
+
+    if (value === "low") {
+
+        classes =
+            "bg-green-100 text-green-700";
+
+    } else if (
+        value === "medium"
+    ) {
+
+        classes =
+            "bg-blue-100 text-blue-700";
+
+    } else if (
+        value === "high"
+    ) {
+
+        classes =
+            "bg-orange-100 text-orange-700";
+
+    } else if (
+        value === "critical"
+    ) {
+
+        classes =
+            "bg-red-100 text-red-700";
+
+    }
+
+
+    return `
+        <span class="inline-block px-2 py-1 rounded-full text-xs font-semibold ${classes}">
+            ${escapeHtml(priority || "-")}
+        </span>
+    `;
+
+}
+
+
+function assetStatusBadge(status) {
+
+    const classes = {
+
+        Available:
+            "bg-green-100 text-green-700",
+
+        Assigned:
+            "bg-blue-100 text-blue-700",
+
+        Maintenance:
+            "bg-yellow-100 text-yellow-700",
+
+        Retired:
+            "bg-slate-100 text-slate-700"
+
+    };
+
+
+    return `
+        <span class="inline-block px-2 py-1 rounded-full text-xs font-semibold ${
+            classes[status] ||
+            "bg-slate-100 text-slate-700"
+        }">
+            ${escapeHtml(status || "-")}
+        </span>
+    `;
+
+}
+
+
+// =============================================================
+// SELECT OPTIONS
+// =============================================================
+
+function statusOptions(
+    current
+) {
+
+    const statuses = [
+        "Open",
+        "Assigned",
+        "In Progress",
+        "Pending",
+        "Resolved",
+        "Closed",
+        "Rejected"
+    ];
+
+
+    return statuses.map(
+        status =>
+            `
+            <option
+                value="${status}"
+                ${status === current ? "selected" : ""}
+            >
+                ${status}
+            </option>
+            `
+    ).join("");
+
+}
+
+
+function priorityOptions(
+    current
+) {
+
+    const priorities = [
+        {
+            id: 1,
+            name: "Low"
+        },
+        {
+            id: 2,
+            name: "Medium"
+        },
+        {
+            id: 3,
+            name: "High"
+        },
+        {
+            id: 4,
+            name: "Critical"
+        }
+    ];
+
+
+    return priorities.map(
+        priority =>
+            `
+            <option
+                value="${priority.id}"
+                ${
+                    String(current)
+                        .toLowerCase() ===
+                    priority.name.toLowerCase()
+                        ? "selected"
+                        : ""
+                }
+            >
+                ${priority.name}
+            </option>
+            `
+    ).join("");
+
+}
+
+
+// =============================================================
+// UTILITIES
+// =============================================================
+
+function formatDate(
+    value
+) {
+
+    if (!value) return "-";
+
+
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return value;
+
+    }
+
+
+    return date.toLocaleString();
+
+}
+
+
+function escapeHtml(
+    value
+) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "";
+
+    }
+
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+</script>
+
+</body>
+</html> n

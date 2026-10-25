@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>IT Help Desk | Login</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#2563eb",
+                        dark: "#0f172a"
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+
+<body class="min-h-screen bg-slate-100 flex items-center justify-center p-4">
+
+    <div class="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden">
+
+        <div class="grid md:grid-cols-2">
+
+            <!-- LEFT SIDE -->
+            <div class="hidden md:flex bg-slate-900 text-white p-10 flex-col justify-between">
+
+                <div>
+
+                    <div class="flex items-center gap-3 mb-10">
+
+                        <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
+                            <span class="text-2xl">🛠️</span>
+                        </div>
+
+                        <div>
+                            <h1 class="text-xl font-bold">
+                                IT Help Desk
+                            </h1>
+
+                            <p class="text-sm text-slate-400">
+                                Support Management System
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <h2 class="text-4xl font-bold leading-tight mb-5">
+                        IT support made
+                        <span class="text-blue-500">
+                            simple.
+                        </span>
+                    </h2>
+
+
+                    <p class="text-slate-400 leading-relaxed mb-8">
+                        Manage technical issues, track support requests,
+                        assign technicians and resolve problems efficiently
+                        from one centralized platform.
+                    </p>
+
+
+                    <div class="space-y-5">
+
+                        <div class="flex gap-4">
+
+                            <div class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center">
+                                🎫
+                            </div>
+
+                            <div>
+                                <h3 class="font-semibold">
+                                    Ticket Management
+                                </h3>
+
+                                <p class="text-sm text-slate-400">
+                                    Create and track IT support requests.
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        <div class="flex gap-4">
+
+                            <div class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center">
+                                👨‍💻
+                            </div>
+
+                            <div>
+                                <h3 class="font-semibold">
+                                    Technician Assignment
+                                </h3>
+
+                                <p class="text-sm text-slate-400">
+                                    Assign issues to the right support staff.
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        <div class="flex gap-4">
+
+                            <div class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center">
+                                📊
+                            </div>
+
+                            <div>
+                                <h3 class="font-semibold">
+                                    Track Progress
+                                </h3>
+
+                                <p class="text-sm text-slate-400">
+                                    Monitor ticket status and resolution.
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="text-sm text-slate-500">
+                    © 2026 IT Help Desk System
+                </div>
+
+            </div>
+
+
+            <!-- RIGHT SIDE -->
+            <div class="p-8 md:p-12">
+
+                <!-- MOBILE LOGO -->
+
+                <div class="flex items-center gap-3 mb-8 md:hidden">
+
+                    <div class="w-11 h-11 bg-blue-600 rounded-xl flex items-center justify-center">
+                        🛠️
+                    </div>
+
+                    <div>
+
+                        <h1 class="font-bold text-lg">
+                            IT Help Desk
+                        </h1>
+
+                        <p class="text-xs text-slate-500">
+                            Support Management System
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="mb-8">
+
+                    <h2 class="text-3xl font-bold text-slate-900">
+                        Welcome back
+                    </h2>
+
+                    <p class="text-slate-500 mt-2">
+                        Sign in to access your support dashboard.
+                    </p>
+
+                </div>
+
+
+                <!-- ERROR MESSAGE -->
+
+                <div
+                    id="errorMessage"
+                    class="hidden mb-5 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+                </div>
+
+
+                <!-- LOGIN FORM -->
+
+                <form id="loginForm" class="space-y-6">
+
+                    <!-- USERNAME -->
+
+                    <div>
+
+                        <label
+                            for="username"
+                            class="block text-sm font-medium text-slate-700 mb-2">
+                            Username
+                        </label>
+
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            placeholder="Enter your username"
+                            autocomplete="username"
+                            required
+                            class="w-full px-4 py-3 border border-slate-300 rounded-xl
+                            focus:outline-none focus:ring-2 focus:ring-blue-500
+                            focus:border-transparent transition">
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+
+                    <div>
+
+                        <div class="flex justify-between mb-2">
+
+                            <label
+                                for="password"
+                                class="block text-sm font-medium text-slate-700">
+                                Password
+                            </label>
+
+                        </div>
+
+                        <div class="relative">
+
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required
+                                class="w-full px-4 py-3 pr-12 border border-slate-300
+                                rounded-xl focus:outline-none focus:ring-2
+                                focus:ring-blue-500 focus:border-transparent transition">
+
+
+                            <button
+                                type="button"
+                                id="togglePassword"
+                                class="absolute right-4 top-1/2 -translate-y-1/2
+                                text-slate-400 hover:text-slate-700">
+
+                                👁️
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- LOGIN BUTTON -->
+
+                    <button
+                        type="submit"
+                        id="loginButton"
+                        class="w-full bg-blue-600 hover:bg-blue-700
+                        text-white font-semibold py-3.5 rounded-xl
+                        transition duration-200 flex items-center justify-center gap-2">
+
+                        <span id="buttonText">
+                            Sign In
+                        </span>
+
+                        <span
+                            id="loadingSpinner"
+                            class="hidden">
+
+                            ⏳
+
+                        </span>
+
+                    </button>
+
+                </form>
+
+
+                <!-- DEMO ACCOUNTS -->
+
+                <div class="mt-8 p-4 bg-slate-50 border border-slate-200 rounded-xl">
+
+                    <p class="text-xs font-semibold text-slate-500 uppercase mb-3">
+                        Demo Accounts
+                    </p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+
+                        <button
+                            type="button"
+                            onclick="fillLogin('admin', 'Admin@123')"
+                            class="p-2 bg-white border rounded-lg hover:border-blue-400">
+
+                            <strong>Admin</strong>
+
+                            <br>
+
+                            admin
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            onclick="fillLogin('helpdesk', 'Helpdesk@123')"
+                            class="p-2 bg-white border rounded-lg hover:border-blue-400">
+
+                            <strong>Help Desk</strong>
+
+                            <br>
+
+                            helpdesk
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            onclick="fillLogin('employee', 'Employee@123')"
+                            class="p-2 bg-white border rounded-lg hover:border-blue-400">
+
+                            <strong>Employee</strong>
+
+                            <br>
+
+                            employee
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <p class="text-center text-xs text-slate-400 mt-8">
+                    Secure IT Support Portal
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+<script>
+
+const API_URL = "http://localhost:5000/api";
+
+
+// ==========================================
+// LOGIN FORM
+// ==========================================
+
+const loginForm = document.getElementById("loginForm");
+
+const errorMessage = document.getElementById("errorMessage");
+
+const loginButton = document.getElementById("loginButton");
+
+const buttonText = document.getElementById("buttonText");
+
+const loadingSpinner = document.getElementById("loadingSpinner");
+
+
+// ==========================================
+// FILL DEMO LOGIN
+// ==========================================
+
+function fillLogin(username, password) {
+
+    document.getElementById("username").value = username;
+
+    document.getElementById("password").value = password;
+
+}
+
+
+// ==========================================
+// PASSWORD VISIBILITY
+// ==========================================
+
+document
+    .getElementById("togglePassword")
+    .addEventListener("click", function () {
+
+        const passwordInput =
+            document.getElementById("password");
+
+        if (passwordInput.type === "password") {
+
+            passwordInput.type = "text";
+
+            this.textContent = "🙈";
+
+        } else {
+
+            passwordInput.type = "password";
+
+            this.textContent = "👁️";
+
+        }
+
+    });
+
+
+// ==========================================
+// LOGIN
+// ==========================================
+
+loginForm.addEventListener("submit", async function (event) {
+
+    event.preventDefault();
+
+
+    errorMessage.classList.add("hidden");
+
+
+    const username =
+        document.getElementById("username").value.trim();
+
+    const password =
+        document.getElementById("password").value;
+
+
+    if (!username || !password) {
+
+        showError("Please enter your username and password.");
+
+        return;
+
+    }
+
+
+    // Loading state
+
+    loginButton.disabled = true;
+
+    loginButton.classList.add("opacity-70");
+
+    buttonText.textContent = "Signing in...";
+
+    loadingSpinner.classList.remove("hidden");
+
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/auth/login`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    username,
+                    password
+                })
+            }
+        );
+
+
+        const data = await response.json();
+
+
+        if (!response.ok || !data.success) {
+
+            throw new Error(
+                data.message || "Login failed"
+            );
+
+        }
+
+
+        // Save authentication data
+
+        localStorage.setItem(
+            "helpdeskToken",
+            data.token
+        );
+
+
+        localStorage.setItem(
+            "helpdeskUser",
+            JSON.stringify(data.user)
+        );
+
+
+        // Redirect to dashboard
+
+        window.location.href = "pages/dashboard.html";
+
+
+    } catch (error) {
+
+        console.error("Login error:", error);
+
+        showError(
+            error.message ||
+            "Unable to connect to the server."
+        );
+
+    } finally {
+
+        loginButton.disabled = false;
+
+        loginButton.classList.remove("opacity-70");
+
+        buttonText.textContent = "Sign In";
+
+        loadingSpinner.classList.add("hidden");
+
+    }
+
+});
+
+
+// ==========================================
+// SHOW ERROR
+// ==========================================
+
+function showError(message) {
+
+    errorMessage.textContent = message;
+
+    errorMessage.classList.remove("hidden");
+
+}
+
+</script>
+
+</body>
+</html>
